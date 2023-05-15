@@ -288,11 +288,21 @@ std::vector<uint8_t> prepareTextForEncoding(const std::vector<uint8_t>& text) {
     */
     std::vector<uint8_t> preparedText;
     for (const auto& ch : text) {
-        if (ch == '\n' || ch == '\r') {
+        switch (ch) {
+        case '\t':
+            preparedText.push_back(' ');
+            preparedText.push_back(' ');
+            preparedText.push_back(' ');
+            preparedText.push_back(' ');
+            break;
+        case '\n':
+        case '\r':
             preparedText.push_back('\a');
-        }
-        else {
+            break;
+            // add more problematic symbols here
+        default:
             preparedText.push_back(ch);
+            break;
         }
     }
     return preparedText;
