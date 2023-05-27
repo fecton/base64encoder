@@ -1,0 +1,23 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    width: 150%;
+    background-color: aliceblue;
+}
+
+body {
+    width: 50%;
+    background-color: blue;
+}
+
+footer {
+    width: 35%;
+    background-color: yellow;
+}
+
+img {
+    src:local("привет_мир.png");
+}
