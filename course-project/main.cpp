@@ -2,67 +2,42 @@
 
 #include <iostream>
 
-void printHelpMessage() {
-    std::cout << "Usage: b64encoder <command> <input_file> <output_file> <encoding>\n\n"
-        << "Commands:\n"
-        << "    encode    Encode the input file using the specified encoding and save the result to the output file.\n"
-        << "    decode    Decode the input file using the specified encoding and save the result to the output file.\n\n"
-        << "Arguments:\n"
-        << "    input_file    The path to the input file.\n"
-        << "    output_file   The path to the output file.\n\n"
-        << "    encoding   Specify the encoding to be used for the operation. Supported encodings: UTF8, UTF16LE, UTF16BE. If not provided, the program will use UTF8 encoding by default.\n"
-        << "        Supported encodings:\n"
-        << "            - cp1251\n"
-        << "            - koi8r\n"
-        << "            - cp866\n\n"
-        << "Description:\n"
-        << "    b64encoder is a command-line program that can encode or decode text files using a\n"
-        << "    simple encoding algorithm. The encoding algorithm replaces all newline characters\n"
-        << "    (both LF and CRLF) with the ASCII bell character (\a), and adds the \"\\a\" character\n"
-        << "    to the beginning of the file to indicate that it has been encoded. The decoding\n"
-        << "    algorithm does the opposite, replacing all occurrences of \"\\a\" with a newline and\n"
-        << "    removing all other occurrences of the bell character.\n\n"
-        << "Examples:\n"
-        << "    b64encoder encode example.html encoded.txt cp866\n"
-        << "    b64encoder decode encoded.txt decoded.txt cp866\n";
-}
-
 int main(int argc, char* argv[]) {
-    if (argc != 5) {
+    if (argc != 5) { // Check if the program is called with correct number of command line arguments
         printHelpMessage();
-        return 1;
+        return 1; // Return 1 to indicate an error
     }
 
-    std::string operation = argv[1];
-    std::string inputFile = argv[2];
-    std::string outputFile = argv[3];
-    std::string format = argv[4];
+    std::string operation  = argv[1]; // Get the operation from the command line argument
+    std::string inputFile  = argv[2]; // Get the input file name from the command line argument
+    std::string outputFile = argv[3]; // Get the output file name from the command line argument
+    std::string format     = argv[4]; // Get the format from the command line argument
 
     try {
-        EncoderFactory encoderFactory;
-        std::unique_ptr<BaseEncoder> encoder = encoderFactory.createEncoder(format);
+        EncoderFactory encoderFactory; // Create an instance of EncoderFactory
+        std::unique_ptr<BaseEncoder> encoder = encoderFactory.createEncoder(format); // Create an encoder based on the specified format
 
-        std::vector<uint8_t> fileData = readFile(inputFile);
+        std::vector<uint8_t> fileData = readFile(inputFile); // Read file data into vector of bytes
 
-        if (operation == "encode") {
-            fileData = encoder->encode(fileData);
-            fileData = prepareTextForEncoding(fileData);
+        if (operation == "encode") { // If the operation is "encode"
+            fileData = encoder->encode(fileData); // Encode the file data using the selected encoder
+            fileData = prepareTextForEncoding(fileData); // Prepare the text data for encoding
         }
-        else if (operation == "decode") {
-            fileData = encoder->decode(fileData);
-            fileData = prepareTextAfterDecoding(fileData);
+        else if (operation == "decode") { // If the operation is "decode"
+            fileData = encoder->decode(fileData); // Decode the file data using the selected encoder
+            fileData = prepareTextAfterDecoding(fileData); // Prepare the text data after decoding
         }
         else {
-            std::cerr << "Invalid operation: " << operation << std::endl;
-            return 1;
+            std::cerr << "Invalid operation: " << operation << std::endl; // Print error message for invalid operation
+            return 1; // Return 1 to indicate an error
         }
 
-        writeFile(outputFile, fileData);
+        writeFile(outputFile, fileData); // Write the processed data to the output file
     }
     catch (const std::exception& ex) {
-        std::cerr << "Error: " << ex.what() << std::endl;
-        return 1;
+        std::cerr << "Error: " << ex.what() << std::endl; // Print error message for exceptions
+        return 1; // Return 1 to indicate an error
     }
 
-    return 0;
+    return 0; // Return 0 to indicate successful execution
 }
